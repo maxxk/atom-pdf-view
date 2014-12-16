@@ -1,5 +1,5 @@
 path = null
-PdfEditorView = null
+PdfEditorModel = require './pdf-editor-model'
 
 module.exports =
   activate: (state) ->
@@ -15,8 +15,7 @@ openUri = (uriToOpen) ->
   path ?= require 'path'
   uriExtension = path.extname(uriToOpen).toLowerCase()
   if uriExtension in pdfExtensions
-    PdfEditorView ?= require './pdf-editor-view'
-    new PdfEditorView(uriToOpen)
+    new PdfEditorModel(uriToOpen)
 
 createPdfStatusView = ->
   {statusBar} = atom.workspaceView
@@ -26,13 +25,3 @@ createPdfStatusView = ->
     view.attach()
   PdfGoToPageView = require  './pdf-goto-page-view.coffee'
   new PdfGoToPageView()
-
-PdfEditorDeserializer =
-  name: 'PdfEditorDeserializer'
-  deserialize: ({filePath}) ->
-    if require('fs-plus').isFileSync(filePath)
-      PdfEditorView ?= require './pdf-editor-view'
-      new PdfEditorView(filePath)
-    else
-      console.warn "Could not deserialize PDF editor for path '#{filePath}' because that file no longer exists"
-atom.deserializers.add PdfEditorDeserializer
